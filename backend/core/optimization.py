@@ -74,6 +74,8 @@ class Assignment:
     tier: str               # immediate | short_term | medium_term
     site_id: str
     site_name: str
+    site_capacity: int
+    site_capacity_remaining: int
     distance_km: float
     recommendation_score: float
     # Coordinates included so the frontend can plot dots + lines with no extra fetch
@@ -92,6 +94,8 @@ class Assignment:
             "tier": self.tier,
             "site_id": self.site_id,
             "site_name": self.site_name,
+            "site_capacity": self.site_capacity,
+            "site_capacity_remaining": self.site_capacity_remaining,
             "distance_km": round(self.distance_km, 2),
             "recommendation_score": round(self.recommendation_score, 4),
             # Geometry — frontend uses these directly for map dots and assignment lines
@@ -257,8 +261,14 @@ def compute_relocation_plan(
             population=int(hab.get("population", 0)),
             vulnerability_score=vs,
             tier=tier,
-            site_id=str(site["id"]),
+                        site_id=str(site["id"]),
             site_name=str(site["name"]),
+            site_capacity=int(
+                site.get("capacity_persons", site.get("capacity_remaining", 0))
+            ),
+            site_capacity_remaining=int(
+                site.get("capacity_remaining", site.get("capacity_persons", 0))
+            ),
             distance_km=dist,
             recommendation_score=rec_score,
             hab_lat=float(hab.get("lat", 0)),
